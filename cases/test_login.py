@@ -6,7 +6,7 @@ class TestLogin:
 
     # 初始化
     def setup_method(self):
-        self.wd = webdriver.Chrome("/usr/local/www/study/python/bin/chromedriver")
+        self.wd = webdriver.Chrome("../bin/chromedriver")
         self.wd.get("http://127.0.0.1:8011/mgr/sign.html")
         # self.wd.maximize_window()
 
@@ -64,7 +64,7 @@ class TestLogin:
     def test_UI0005(self):
         text = self.login()
         print(text)
-        assert text == "白月销售管理系统"
+        assert text == "白月销售管理系统a"
 
     # 退出登录
     def test_UI0006(self):
