@@ -6,7 +6,7 @@ class TestLogin:
 
     # 初始化
     def setup_method(self):
-        self.wd = webdriver.Chrome("../bin/chromedriver")
+        self.wd = webdriver.Chrome()
         self.wd.get("http://127.0.0.1:8011/mgr/sign.html")
         # self.wd.maximize_window()
 
