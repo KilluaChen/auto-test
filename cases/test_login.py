@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 from models.login import Login
@@ -33,12 +35,12 @@ class TestLogin:
         [correctUsername, "12345678910123456789101234567891012345678910", loginFail],
         ["12345678910123456789101234567891012345678910", "12345678910123456789101234567891012345678910", loginFail],
     ])
-    def test_LoginFail(self, username, password, text):
-        rst = self.login.loginCheck(username, password)
+    def test_login_fail(self, username, password, text):
+        rst = self.login.login_check(username, password)
         assert rst == text
 
     # 登录成功
-    @pytest.mark.dependency(name="login")
-    def test_LoginOK(self):
+    # @pytest.mark.dependency(name="login")
+    def test_login_ok(self):
         self.login.login(self.correctUsername, self.correctPwd)
         assert self.login.wd.title == "白月销售管理系统"
