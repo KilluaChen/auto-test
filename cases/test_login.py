@@ -1,79 +1,61 @@
-from selenium import webdriver
-import time
+from models.login import *
 
 
 class TestLogin:
 
-    # 初始化
-    def setup_method(self):
-        self.wd = webdriver.Chrome()
-        self.wd.get("http://127.0.0.1:8011/mgr/sign.html")
-        # self.wd.maximize_window()
-
-    # 释放资源
-    def teardown_method(self):
-        self.wd.quit()
-
-    # 不输入用户名
-    def test_UI0001(self):
-        self.wd.find_element_by_id("password").send_keys("88888888")
-        self.wd.find_element_by_css_selector("button[type=submit]").click()
-        time.sleep(1)
-        text = self.wd.switch_to.alert.text
-        print(text)
+    # 不输入用户名和密码
+    def test_LoginFail001(self):
+        text = loginCheck(None, None)
         assert text == "请输入用户名"
 
-    # 不输入密码
-    def test_UI0002(self):
-        self.wd.find_element_by_id("username").send_keys("byhy")
-        self.wd.find_element_by_css_selector("button[type=submit]").click()
-        time.sleep(1)
-        text = self.wd.switch_to.alert.text
-        print(text)
+    # 不输入用户名,错误密码
+    def test_LoginFail002(self):
+        text = loginCheck(None, "123")
+        assert text == "请输入用户名"
+
+    # 不输入用户名,正确密码
+    def test_LoginFail003(self):
+        text = loginCheck(None, "88888888")
+        assert text == "请输入用户名"
+
+    # 错误用户名,不输入密码
+    def test_LoginFail004(self):
+        text = loginCheck("123", None)
         assert text == "请输入密码"
 
-    # 错误的账号
-    def test_UI0003(self):
-        self.wd.find_element_by_id("username").send_keys("byh")
-        self.wd.find_element_by_id("password").send_keys("88888888")
-        self.wd.find_element_by_css_selector("button[type=submit]").click()
-        time.sleep(1)
-        text = self.wd.switch_to.alert.text
-        print(text)
+    # 正确用户名,不输入密码
+    def test_LoginFail005(self):
+        text = loginCheck("byhy", None)
+        assert text == "请输入密码"
+
+    # 错误用户名,正确密码
+    def test_LoginFail006(self):
+        text = loginCheck("1234", "88888888")
         assert text == "登录失败 : 用户名或者密码错误"
 
-    # 错误的密码
-    def test_UI0004(self):
-        self.wd.find_element_by_id("username").send_keys("byhy")
-        self.wd.find_element_by_id("password").send_keys("666666")
-        self.wd.find_element_by_css_selector("button[type=submit]").click()
-        time.sleep(1)
-        text = self.wd.switch_to.alert.text
-        print(text)
+    # 正确用户名,错误密码
+    def test_LoginFail007(self):
+        text = loginCheck("byhy", "12341234")
         assert text == "登录失败 : 用户名或者密码错误"
 
-    # 登录逻辑
-    def login(self):
-        self.wd.find_element_by_id("username").send_keys("byhy")
-        self.wd.find_element_by_id("password").send_keys("88888888")
-        self.wd.find_element_by_css_selector("button[type=submit]").click()
-        time.sleep(1)
-        return self.wd.title
+    # 超长用户名,正常密码
+    def test_LoginFail008(self):
+        text = loginCheck("12345678910123456789101234567891012345678910", "12341234")
+        assert text == "登录失败 : 用户名或者密码错误"
 
-    # 正确的账号密码登录
-    def test_UI0005(self):
-        text = self.login()
-        print(text)
-        assert text == "白月销售管理系统a"
+    # 正常用户名,超长密码
+    def test_LoginFail009(self):
+        text = loginCheck("byhy", "12345678910123456789101234567891012345678910")
+        assert text == "登录失败 : 用户名或者密码错误"
 
-    # 退出登录
-    def test_UI0006(self):
-        text = self.login()
-        if text != "白月销售管理系统":
-            assert False
-        self.wd.find_element_by_css_selector('.user-image').click()
-        self.wd.find_element_by_css_selector('.pull-right > .btn-flat').click()
-        time.sleep(1)
-        text = self.wd.title
+    # 超长用户名,超长密码
+    def test_LoginFail010(self):
+        text = loginCheck("12345678910123456789101234567891012345678910",
+                          "12345678910123456789101234567891012345678910")
+        assert text == "登录失败 : 用户名或者密码错误"
+
+    # 正确用户名,正确密码
+    def test_LoginOk001(self):
+        text = loginOK("byhy", "88888888")
         print(text)
-        assert text == "白月SMS系统 | 登录"
+        assert text == "白月销售管理系统"
