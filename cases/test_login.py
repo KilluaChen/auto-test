@@ -1,61 +1,44 @@
-from models.login import *
+import pytest
+
+from models.login import Login
 
 
+# 登录功能
 class TestLogin:
+    usernameEmpty = "请输入用户名"
+    pwdEmpty = "请输入密码"
+    loginFail = "登录失败 : 用户名或者密码错误"
 
-    # 不输入用户名和密码
-    def test_LoginFail001(self):
-        text = loginCheck(None, None)
-        assert text == "请输入用户名"
+    correctUsername = "byhy"
+    correctPwd = "88888888"
 
-    # 不输入用户名,错误密码
-    def test_LoginFail002(self):
-        text = loginCheck(None, "123")
-        assert text == "请输入用户名"
+    def setup_method(self):
+        print("\n前置前置前置前置前置前置前置前置前置前置前置前置前置前置前置前置前置前置\n")
+        self.login = Login()
 
-    # 不输入用户名,正确密码
-    def test_LoginFail003(self):
-        text = loginCheck(None, "88888888")
-        assert text == "请输入用户名"
+    def teardown_method(self):
+        print("\n后置后置后置后置后置后置后置后置后置后置后置后置后置后置后置后置后置后置\n")
+        self.login.wd.quit()
 
-    # 错误用户名,不输入密码
-    def test_LoginFail004(self):
-        text = loginCheck("123", None)
-        assert text == "请输入密码"
+    # 登录失败
+    @pytest.mark.parametrize('username,password,text', [
+        [None, None, usernameEmpty],
+        [None, correctPwd, usernameEmpty],
+        [None, "123", usernameEmpty],
+        ["123", None, pwdEmpty],
+        [correctUsername, None, pwdEmpty],
+        [correctUsername, "12341234", loginFail],
+        ["1234", correctPwd, loginFail],
+        ["12345678910123456789101234567891012345678910", correctPwd, loginFail],
+        [correctUsername, "12345678910123456789101234567891012345678910", loginFail],
+        ["12345678910123456789101234567891012345678910", "12345678910123456789101234567891012345678910", loginFail],
+    ])
+    def test_LoginFail(self, username, password, text):
+        rst = self.login.loginCheck(username, password)
+        assert rst == text
 
-    # 正确用户名,不输入密码
-    def test_LoginFail005(self):
-        text = loginCheck("byhy", None)
-        assert text == "请输入密码"
-
-    # 错误用户名,正确密码
-    def test_LoginFail006(self):
-        text = loginCheck("1234", "88888888")
-        assert text == "登录失败 : 用户名或者密码错误"
-
-    # 正确用户名,错误密码
-    def test_LoginFail007(self):
-        text = loginCheck("byhy", "12341234")
-        assert text == "登录失败 : 用户名或者密码错误"
-
-    # 超长用户名,正常密码
-    def test_LoginFail008(self):
-        text = loginCheck("12345678910123456789101234567891012345678910", "12341234")
-        assert text == "登录失败 : 用户名或者密码错误"
-
-    # 正常用户名,超长密码
-    def test_LoginFail009(self):
-        text = loginCheck("byhy", "12345678910123456789101234567891012345678910")
-        assert text == "登录失败 : 用户名或者密码错误"
-
-    # 超长用户名,超长密码
-    def test_LoginFail010(self):
-        text = loginCheck("12345678910123456789101234567891012345678910",
-                          "12345678910123456789101234567891012345678910")
-        assert text == "登录失败 : 用户名或者密码错误"
-
-    # 正确用户名,正确密码
-    def test_LoginOk001(self):
-        text = loginOK("byhy", "88888888")
-        print(text)
-        assert text == "白月销售管理系统"
+    # 登录成功
+    @pytest.mark.dependency(name="login")
+    def test_LoginOK(self):
+        self.login.login(self.correctUsername, self.correctPwd)
+        assert self.login.wd.title == "白月销售管理系统"
