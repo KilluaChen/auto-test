@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 from models.order import Order
@@ -27,9 +29,17 @@ class TestOrder:
     def teardown_class(cls):
         cls.model.driver.quit()
 
-    @pytest.mark.dependency(depends=["login"], scope="session")
     def test_order_list(self):
         self.model.list()
         print(self.model.driver.title)
         print("OrderList")
+        assert True
+
+    @pytest.mark.parametrize('name,custom,drug', [
+        ["测试", "医院", "盒装"],
+        ["测试", "医院", "测试"],
+    ])
+    def test_order_add(self, name, custom, drug):
+        self.test_order_list()
+        self.model.add(name, custom, drug)
         assert True

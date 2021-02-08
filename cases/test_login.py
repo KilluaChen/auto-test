@@ -46,13 +46,11 @@ class TestLogin:
         assert text == expect_text
 
     # 登录成功
-    @pytest.mark.dependency(name="login")
     def test_login_success(self):
         text = self.model.login_success(self.correctUsername, self.correctPwd)
         assert text == "白月销售管理系统"
 
     # 退出登录
-    @pytest.mark.dependency(depends=["login"])
     def test_logout(self):
         self.test_login_success()
         text = self.model.logout()
